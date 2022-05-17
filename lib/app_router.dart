@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:go_router_example/auth_state.dart';
 
+import 'pages/account_pref_page.dart';
 import 'pages/error_page.dart';
+import 'pages/privacy_pref_page.dart';
 import 'pages/search_page.dart';
+import 'pages/setting_page.dart';
 import 'pages/tweet_page.dart';
 import 'pages/user_page.dart';
 import 'pages/home_page.dart';
@@ -21,6 +24,9 @@ class PathName {
   static const tweet = 'tweet';
   static const user = 'user';
   static const search = 'search';
+  static const settings = 'settings';
+  static const privacyPref = 'privacyPref';
+  static const accountPref = 'accountPref';
 }
 
 class ParamName {
@@ -113,7 +119,39 @@ final goRouterProvider = Provider((ref) {
           );
         },
       ),
-      // TODO: settingを作る(一部ログイン必要)
+      GoRoute(
+        name: PathName.settings,
+        path: '/settings',
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: SettingPage());
+        },
+        redirect: (state) {
+          final bool loggedIn = ref.read(loggedInProvider);
+          final bool inPrivacyPref = state.name == PathName.privacyPref;
+          if (loggedIn || inPrivacyPref) return null;
+          return state.namedLocation(
+            PathName.login,
+            params: {QueryName.from: state.location},
+          );
+        },
+        routes: [
+          GoRoute(
+            // login required
+            name: PathName.accountPref,
+            path: 'account',
+            pageBuilder: (context, state) {
+              return const NoTransitionPage(child: AccountPrefPage());
+            },
+          ),
+          GoRoute(
+            name: PathName.privacyPref,
+            path: 'privacy',
+            pageBuilder: (context, state) {
+              return const NoTransitionPage(child: PrivacyPrefPage());
+            },
+          ),
+        ],
+      ),
       GoRoute(
         name: PathName.logout,
         path: '/logout',
