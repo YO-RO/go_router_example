@@ -69,6 +69,13 @@ class HomePage extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
 
+            /// setting page
+            ElevatedButton(
+              onPressed: () => context.goNamed(PathName.settings),
+              child: const Text('settings'),
+            ),
+            const SizedBox(height: 10),
+
             /// login page
             ElevatedButton(
               onPressed:
